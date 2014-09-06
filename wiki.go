@@ -1,8 +1,17 @@
 package main
 
 import (
+	// String format package. Printing, etc.
 	"fmt"
+
+	// This package is for templating, for keeping HTML in a separate file,
+	// allowing us to change our pages without modifying underlying Go code.
+	"html/template"
+
+	// File Handling package.
 	"io/ioutil"
+
+	// Networking. Creating server and related methods.
 	"net/http"
 )
 
