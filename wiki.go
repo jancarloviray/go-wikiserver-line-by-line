@@ -118,4 +118,19 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		p = &Page{Title: title}
 	}
+	// func (t *Template) ParseFiles(filenames ...string) (*Template, error)
+	//	ParseFiles parses the named files and associates the resulting templates
+	//	with t. If an error occurs, parsing stops and the returned template is
+	//	nil; otherwise it is t. There must be at least one file.
+
+	// Note that this returns a *template.Template
+	t, _ := template.ParseFiles("edit.html")
+
+	// func (t *Template) Execute(wr io.Writer, data interface{}) error
+	//	Execute applies a parsed template to the specified data object, writing
+	//	the output to wr. If an error occurs executing the template or writing
+	//	its output, execution stops, but partial results may already have been
+	//	written to the output writer. A template may be executed safely in
+	//	parallel.
+	t.Execute(w, p)
 }
