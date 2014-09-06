@@ -109,7 +109,11 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	// http.ResponseWriter implements the Writer interface so it's possible
 	// to "stream" the results to it.
 	// type Writer interface { Write(p []byte) (n int, err error) }
-	fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
+
+	// fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
+
+	t, _ := template.ParseFiles("view.html")
+	t.Execute(w, p)
 }
 
 func editHandler(w http.ResponseWriter, r *http.Request) {
