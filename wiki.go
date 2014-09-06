@@ -36,6 +36,8 @@ func main() {
 	//	DefaultServeMux. The documentation for ServeMux explains how patterns
 	//	are matched.
 	http.HandleFunc("/view/", viewHandler)
+	http.HandleFunc("/edit/", editHandler)
+	//http.HandleFunc("/save/", saveHandler)
 	http.ListenAndServe(":8080", nil)
 }
 
@@ -108,4 +110,12 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	// to "stream" the results to it.
 	// type Writer interface { Write(p []byte) (n int, err error) }
 	fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
+}
+
+func editHandler(w http.ResponseWriter, r *http.Request) {
+	title := r.URL.Path[len("/edit/"):]
+	p, err := loadPage(title)
+	if err != nil {
+		p = &Page{Title: title}
+	}
 }
