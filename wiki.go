@@ -3,9 +3,34 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"net/http"
 )
 
-// DATA STRUCTURES
+// ENTRY POINT
+
+func main() {
+	// Instantiation of new Page
+	p1 := &Page{Title: "TestPage", Body: []byte("This is a sample Page")}
+	p1.save()
+
+	// Remember that it returns a "tuple" (*Page, error)?
+	// Here, we just ignore the second character by using "_"
+	p2, _ := loadPage("TestPage")
+
+	// string(p2.Body) casts []byte into string
+	fmt.Println(string(p2.Body))
+
+	// SERVER
+
+	// func HandleFunc(pattern string, handler func(ResponseWriter, *Request))
+	//	HandleFunc registers the handler function for the given pattern in the
+	//	DefaultServeMux. The documentation for ServeMux explains how patterns
+	//	are matched.
+	http.HandleFunc("/view/", viewHandler)
+	http.ListenAndServe(":8080", nil)
+}
+
+// DATA STRUCTURES & METHODS
 
 type Page struct {
 	Title string
@@ -32,6 +57,8 @@ func (p *Page) save() error {
 	return ioutil.WriteFile(filename, p.Body, 0600)
 }
 
+// FUNCTION HELPERS
+
 // Notice that this does not have a receiver, so it is just a regular function
 // instead of being a method to an object/struct.
 // Why is it returning a pointer of type Page? Again, like above, it is to
@@ -56,16 +83,20 @@ func loadPage(title string) (*Page, error) {
 	return &Page{Title: title, Body: body}, nil
 }
 
-// Entry point!
-func main() {
-	// Instantiation of new Page
-	p1 := &Page{Title: "TestPage", Body: []byte("This is a sample Page")}
-	p1.save()
+// http://golang.org/pkg/net/http/#ResponseWriter
+// http://golang.org/pkg/net/http/#Request
+func viewHandler(w http.ResponseWriter, r *http.Request) {
+	// This takes all the characters after "/view/" and assigns it to "title"
+	title := r.URL.Path[len("/view/"):]
+	p, _ := loadPage(title)
 
-	// Remember that it returns a "tuple" (*Page, error)?
-	// Here, we just ignore the second character by using "_"
-	p2, _ := loadPage("TestPage")
+	// func Fprintf(w io.Writer, format string, a ...interface{})
+	// (n int, err error)
+	//	Fprintf formats according to a format specifier and writes to w. It
+	//	returns the number of bytes written and any write error encountered.
 
-	// string(p2.Body) casts []byte into string
-	fmt.Println(string(p2.Body))
+	// http.ResponseWriter implements the Writer interface so it's possible
+	// to "stream" the results to it.
+	// type Writer interface { Write(p []byte) (n int, err error) }
+	fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
 }
