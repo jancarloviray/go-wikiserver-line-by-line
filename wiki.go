@@ -55,3 +55,17 @@ func loadPage(title string) (*Page, error) {
 	// This returns a "tuple" of type (*Page, error)
 	return &Page{Title: title, Body: body}, nil
 }
+
+// Entry point!
+func main() {
+	// Instantiation of new Page
+	p1 := &Page{Title: "TestPage", Body: []byte("This is a sample Page")}
+	p1.save()
+
+	// Remember that it returns a "tuple" (*Page, error)?
+	// Here, we just ignore the second character by using "_"
+	p2, _ := loadPage("TestPage")
+
+	// string(p2.Body) casts []byte into string
+	fmt.Println(string(p2.Body))
+}
